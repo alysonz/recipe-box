@@ -1,0 +1,9 @@
+name = "recipe-box"
+compatibility_date = "2026-11-10"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "recipe-box"
+database_id = "12d8582d-a411-4a7a-a44f-6def8238d762"
+migrations_dir = "migrations"
