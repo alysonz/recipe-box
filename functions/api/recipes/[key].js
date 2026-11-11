@@ -20,9 +20,11 @@ export async function onRequestPut({ request, env, params }) {
   try { recipe = await request.json(); } catch { return json({ error: "Invalid JSON." }, 400); }
   if (!recipe || typeof recipe !== "object" || Array.isArray(recipe)) return json({ error: "Recipe must be an object." }, 400);
   const fields = normalizeRecipe(recipe);
-  const assignments = RECIPE_FIELDS.map(field => `${field} = ?`).join(", ");
+  // The imported CSV id is internal metadata and is not editable through the UI.
+  const editableFields = RECIPE_FIELDS.filter(field => field !== "id");
+  const assignments = editableFields.map(field => `${field} = ?`).join(", ");
   const result = await env.DB.prepare(`UPDATE recipes SET ${assignments}, updated_at = CURRENT_TIMESTAMP WHERE recipe_key = ?`)
-    .bind(...RECIPE_FIELDS.map(field => fields[field]), params.key).run();
+    .bind(...editableFields.map(field => fields[field]), params.key).run();
   if (!result.meta.changes) return json({ error: "Recipe not found." }, 404);
   return json(recipeForApi(params.key, fields));
 }
